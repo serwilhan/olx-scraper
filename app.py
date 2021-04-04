@@ -1,9 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
-import pandas as pd
+import csv
 
 # Scrape
-URL = 'https://www.olx.co.id/makassar-kota_g4000307/dijual-rumah-apartemen_c5158'
+URL = 'https://www.olx.co.id/makassar_g5005674/dijual-rumah-apartemen_c5158'
 
 headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0'}
 
@@ -14,17 +14,14 @@ results = soup.find(class_='_3etsg')
 
 job_elems = results.find_all('div', class_='IKo3_')
 
-# Write Data to CSV
-col_names = ['Title',
-             'Price',
-             'Bedroom',
-             'Bathroom',
-             'B_area',
-             'Location',
-             'Date']
+# Scraping and Writing to csv Process
+with open('data20.csv', 'w', newline='') as f:
+    fieldnames = ['Title', 'Price', 'Bedroom', 'Bathroom', 'B_Area', 'Location', 'Date']
 
-# Scraping Process
-for x in range(1, 5):
+    writer = csv.DictWriter(f, fieldnames=fieldnames)
+
+    writer.writeheader()
+
     for job_elem in job_elems:
         title = job_elem.find('span', class_='_2tW1I').text
         price = job_elem.find('span', class_='_89yzn').text[3:].replace('.', '')
@@ -48,7 +45,7 @@ for x in range(1, 5):
         dictionary['Location'] = location
         dictionary['Date'] = date
 
-        print(dictionary)
+        writer.writerow(dictionary)
         # print("Title    :", title)
         # print("Price    :", price)
         # print("Bedroom  :", bedroom)
